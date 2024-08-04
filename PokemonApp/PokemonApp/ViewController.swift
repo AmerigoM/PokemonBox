@@ -9,9 +9,10 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    private let titleLabel = UILabel()
+    private let titleLabel: UILabel = UILabel()
     private let searchBar: UISearchBar = UISearchBar()
     private let tableView: UITableView = UITableView()
+    private let emptyLabel: UILabel = UILabel()
     
     private var pokemonList: [PokemonDisplay] = []
     private var filteredPokemonList: [PokemonDisplay] = []
@@ -28,6 +29,7 @@ class ViewController: UIViewController {
         setupTitleLabel()
         setupSearchBar()
         setupTableView()
+        setupEmptyLabel()
         
         hideKeyboardWhenTappedAround()
         
@@ -40,6 +42,25 @@ class ViewController: UIViewController {
     }
     
     // MARK: - UI setup
+    
+    private func setupEmptyLabel() {
+        emptyLabel.text = "Woooah,\n such emptiness..."
+        emptyLabel.textAlignment = .center
+        emptyLabel.font = UIFont.italicSystemFont(ofSize: 16)
+        emptyLabel.numberOfLines = 2
+        emptyLabel.textColor = UIColor(red: 0.52, green: 0.52, blue: 0.52, alpha: 1.0)
+        emptyLabel.isHidden = true
+        
+        view.addSubview(emptyLabel)
+        
+        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            emptyLabel.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
+            emptyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            emptyLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            emptyLabel.heightAnchor.constraint(equalToConstant: 100)
+        ])
+    }
     
     private func setupTitleLabel() {
         let attributedText = NSMutableAttributedString(
@@ -70,6 +91,9 @@ class ViewController: UIViewController {
     
     
     private func setupSearchBar() {
+        searchBar.layer.borderWidth = 1
+        searchBar.layer.borderColor = UIColor(red: 255/255, green: 253/255, blue: 247/255, alpha: 1.0).cgColor
+        
         view.addSubview(searchBar)
           
         searchBar.translatesAutoresizingMaskIntoConstraints = false
@@ -187,8 +211,10 @@ extension ViewController: UISearchBarDelegate {
             do {
                 let searchResults = try await engine.searchPokemon(name: query)
                 self.filteredPokemonList = [searchResults]
+                self.emptyLabel.isHidden = true
                 self.tableView.reloadData()
             } catch {
+                self.emptyLabel.isHidden = false
                 self.filteredPokemonList = []
                 self.tableView.reloadData()
             }
@@ -203,6 +229,7 @@ extension ViewController: UISearchBarDelegate {
 extension ViewController: UITextFieldDelegate {
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         self.searchIsActive = false
+        self.emptyLabel.isHidden = true
         self.filteredPokemonList = self.pokemonList
         self.tableView.reloadData()
         
