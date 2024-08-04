@@ -175,6 +175,8 @@ extension ViewController: UITableViewDataSource {
         
         if offsetY > contentHeight - height {
             guard !isLoading else { return }
+            guard self.pokemonList.count < self.engine.getTotalCount() else { return }
+            
             self.isLoading = true
             
             Task {

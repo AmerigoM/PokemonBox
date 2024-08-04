@@ -10,6 +10,7 @@ import Foundation
 // MARK: - Pokemon list
 
 struct PokemonListResponse: Decodable {
+    let count: Int
     let results: [PokemonListEntry]
 }
 

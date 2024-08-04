@@ -14,6 +14,7 @@ public class PokemonEngine {
     // MARK: - Private variables
     
     private var currentOffset = 0
+    private var totalCount = -1
     
     // MARK: - Lifecycle methods
     
@@ -65,6 +66,10 @@ public class PokemonEngine {
         return PokemonDisplay(id: detailsResult.id, name: name, image: detailsResult.sprites.other.officialArtwork.front_default, types: types, description: description)
     }
     
+    public func getTotalCount() -> Int {
+        return self.totalCount
+    }
+    
     // MARK: - Private methods
     
     private func fetchPokemonList() async throws -> [PokemonListEntry] {
@@ -74,6 +79,9 @@ public class PokemonEngine {
         let (data, _) = try await URLSession.shared.data(from: url)
         let decoder = JSONDecoder()
         let response = try decoder.decode(PokemonListResponse.self, from: data)
+        
+        self.totalCount = response.count
+        
         return response.results
     }
     
